@@ -90837,6 +90837,46 @@ our $data_weight_girl_5_19y = [
 ];
 # END FRAGMENT id=data-growth_ref_who_weight_age_girl_5_19y
 
+sub _calc_percentile {
+    my ($val, $row, $meta) = @_;
+
+    my @vals;
+    push @vals, [  0.1, $row->[ $meta->{fields}{P01}{pos} ]];
+    push @vals, [  1  , $row->[ $meta->{fields}{P1}{pos} ]];
+    push @vals, [  3  , $row->[ $meta->{fields}{P3}{pos} ]];
+    push @vals, [  5  , $row->[ $meta->{fields}{P5}{pos} ]];
+    push @vals, [ 10  , $row->[ $meta->{fields}{P10}{pos} ]];
+    push @vals, [ 15  , $row->[ $meta->{fields}{P15}{pos} ]];
+    push @vals, [ 25  , $row->[ $meta->{fields}{P25}{pos} ]];
+    push @vals, [ 50  , $row->[ $meta->{fields}{P50}{pos} ]];
+    push @vals, [ 75  , $row->[ $meta->{fields}{P75}{pos} ]];
+    push @vals, [ 85  , $row->[ $meta->{fields}{P85}{pos} ]];
+    push @vals, [ 90  , $row->[ $meta->{fields}{P90}{pos} ]];
+    push @vals, [ 95  , $row->[ $meta->{fields}{P95}{pos} ]];
+    push @vals, [ 97  , $row->[ $meta->{fields}{P97}{pos} ]];
+    push @vals, [ 99  , $row->[ $meta->{fields}{P99}{pos} ]];
+    push @vals, [ 99.9, $row->[ $meta->{fields}{P999}{pos} ]];
+
+    for my $i (0..$#vals) {
+        if ($i == 0) {
+            if ($val < $vals[$i][1]) {
+                return "<$vals[$i][0]";
+            }
+            next;
+        }
+        if ($i == $#vals) {
+            if ($val > $vals[$i][1]) {
+                return ">$vals[$i][0]";
+            }
+            next;
+        }
+        next unless $val >= $vals[$i-1][1] && $val <= $vals[$i][1];
+        return sprintf "%.1f",
+            $vals[$i-1][0] + ($val - $vals[$i-1][1]) / ($vals[$i][1] - $vals[$i-1][1])
+            * ($vals[$i][0] - $vals[$i-1][0]);
+    }
+    die "BUG: Uncalculated percentile";
+}
 
 $SPEC{get_who_growth_reference} = {
     v => 1.1,
@@ -90852,6 +90892,14 @@ $SPEC{get_who_growth_reference} = {
             req => 1,
             pos => 1,
         },
+        height => {
+            summary => 'Specify height to calculate percentile',
+            schema => ['float*', xmin=>0],
+        },
+        weight => {
+            summary => 'Specify weight to calculate percentile',
+            schema => ['float*', xmin=>0],
+        },
     },
 };
 sub get_who_growth_reference {
@@ -90862,8 +90910,9 @@ sub get_who_growth_reference {
     my $dob    = $args{dob};
 
     my $now = time();
-    my $days   = int(($now - $dob)/86400);
-    my $months = int(($now - $dob)/86400/30.4375);
+    my $days     = int(($now - $dob)/86400);
+    my $months   = int(($now - $dob)/86400/30.4375);
+    my $months_f = sprintf "%.1f", ($now - $dob)/86400/30.4375;
 
     return [412, "Negative age entered"] if $days < 0;
     return [412, "Over 19 years of age"] if $months > 19*12;
@@ -90871,7 +90920,7 @@ sub get_who_growth_reference {
     my $res = [200, "OK", {}];
 
     $res->[2]{gender} = $gender;
-    $res->[2]{age} = "$months month(s)";
+    $res->[2]{age} = "$months_f month(s)";
 
   GET_HEIGHT: {
         my $name = "height_".($gender eq 'M' ? 'boy' : 'girl');
@@ -90889,7 +90938,10 @@ sub get_who_growth_reference {
         my $row = $data->[$idx];
 
         $res->[3]{'func.raw_height'} = $row;
-        $res->[2]{P50_height} = $row->[ $meta->{fields}{P50}{pos} ];
+        $res->[2]{mean_height} = $row->[ $meta->{fields}{P50}{pos} ];
+        if ($args{height}) {
+            $res->[2]{height_percentile} = _calc_percentile($args{height}, $row, $meta);
+        }
     }
 
   GET_WEIGHT: {
@@ -90908,7 +90960,10 @@ sub get_who_growth_reference {
         my $row = $data->[$idx];
 
         $res->[3]{'func.raw_weight'} = $row;
-        $res->[2]{P50_weight} = $row->[ $meta->{fields}{P50}{pos} ];
+        $res->[2]{mean_weight} = $row->[ $meta->{fields}{P50}{pos} ];
+        if ($args{weight}) {
+            $res->[2]{weight_percentile} = _calc_percentile($args{weight}, $row, $meta);
+        }
     }
 
     $res;
