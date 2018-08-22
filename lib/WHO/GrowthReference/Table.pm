@@ -90895,10 +90895,12 @@ $SPEC{get_who_growth_reference} = {
         height => {
             summary => 'Specify height to calculate percentile',
             schema => ['float*', xmin=>0],
+            cmdline_aliases => {H=>{}},
         },
         weight => {
             summary => 'Specify weight to calculate percentile',
             schema => ['float*', xmin=>0],
+            cmdline_aliases => {W=>{}},
         },
     },
 };
