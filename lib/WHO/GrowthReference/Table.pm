@@ -90972,7 +90972,35 @@ sub get_who_growth_reference {
 1;
 # ABSTRACT:
 
+=head1 SYNOPSIS
+
+ use WHO::GrowthReference::Table qw(get_who_growth_reference);
+
+ # get mean height & weight of a 3-year old girl
+
+ my $res = get_who_growth_reference(gender => "F", dob => time() - 3*365.25*86400);
+ # => [200, "OK", {
+ #      age => "36.0 month(s)",
+ #      mean_height => 95.034, # cm
+ #      mean_weight => 13.9,   # kg
+ #     }]
+
+ # you have a 3.5-year old boy weighing at 14.8kg and with a height of 102cm,
+ # calculate the percentiles
+
+ my $res = get_who_growth_reference(gender => "M", dob => time() - 3.5*365.25*86400, weight=>14.8, height=>102);
+ # => [200, "OK", {
+ #      age => "42.0 month(s)",
+ #      mean_height => 99.844, # cm
+ #      height_percentile => 70.2, # your boy's height is above world average, about 70.2% of boys of the same age are shorter than your boy
+ #      mean_weight => 15.3,   # kg
+ #      weight_percentile => 39.6, # your boy's weight is below world average, about 39.6% of boys of the same age weigh less than your boy
+ #     }]
+
+
 =head1 SEE ALSO
+
+L<App::WHOGrowthReferenceUtils>
 
 L<http://www.who.int/childgrowth/standards/en/>
 
