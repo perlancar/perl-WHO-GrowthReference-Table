@@ -90837,6 +90837,13 @@ our $data_weight_girl_5_19y = [
 ];
 # END FRAGMENT id=data-growth_ref_who_weight_age_girl_5_19y
 
+my @percentiles = qw/P01 P1 P3 P5 P10 P15 P25 P50 P75 P85 P90 P95 P97 P99 P999/;
+
+sub _interpolate {
+    my ($x, $x1, $y1, $x2, $y2) = @_;
+    sprintf "%.1f", $y1 + ($y2-$y1)/($x2-$x1)*($x-$x1);
+}
+
 sub _calc_percentile {
     my ($val, $row, $meta) = @_;
 
@@ -90941,8 +90948,22 @@ sub get_who_growth_reference {
 
         $res->[3]{'func.raw_height'} = $row;
         $res->[2]{mean_height} = $row->[ $meta->{fields}{P50}{pos} ];
+
+        for (@percentiles) {
+            $res->[2]{"height_$_"} = $row->[ $meta->{fields}{$_}{pos} ];
+        }
+        $res->[2]{"height_Z-3"} = _interpolate( 0.170,  0.1 => $row->[ $meta->{fields}{P01}{pos} ],  1   => $row->[ $meta->{fields}{P1}{pos} ]);
+        $res->[2]{"height_Z-2"} = _interpolate( 2.287,  1   => $row->[ $meta->{fields}{P1}{pos}  ],  3   => $row->[ $meta->{fields}{P3}{pos} ]);
+        $res->[2]{"height_Z-1"} = _interpolate(15.867, 15   => $row->[ $meta->{fields}{P15}{pos} ], 25   => $row->[ $meta->{fields}{P25}{pos} ]);
+        $res->[2]{"height_Z+1"} = _interpolate(84.133, 75   => $row->[ $meta->{fields}{P75}{pos} ], 85   => $row->[ $meta->{fields}{P85}{pos} ]);
+        $res->[2]{"height_Z+2"} = _interpolate(97.713, 97   => $row->[ $meta->{fields}{P97}{pos} ], 99   => $row->[ $meta->{fields}{P99}{pos} ]);
+        $res->[2]{"height_Z+3"} = _interpolate(99.830, 99   => $row->[ $meta->{fields}{P99}{pos} ], 99.9 => $row->[ $meta->{fields}{P999}{pos} ]);
+        
         if ($args{height}) {
-            $res->[2]{height_percentile} = _calc_percentile($args{height}, $row, $meta);
+            my $pct = _calc_percentile($args{height}, $row, $meta);
+            $res->[2]{height_percentile} = $pct;
+            require Statistics::Standard_Normal;
+            $res->[2]{height_zscore} = Statistics::Standard_Normal::pct_to_z($pct);
         }
     }
 
@@ -90963,8 +90984,22 @@ sub get_who_growth_reference {
 
         $res->[3]{'func.raw_weight'} = $row;
         $res->[2]{mean_weight} = $row->[ $meta->{fields}{P50}{pos} ];
+        
+        for (@percentiles) {
+            $res->[2]{"weight_$_"} = $row->[ $meta->{fields}{$_}{pos} ];
+        }
+        $res->[2]{"weight_Z-3"} = _interpolate( 0.170,  0.1 => $row->[ $meta->{fields}{P01}{pos} ],  1   => $row->[ $meta->{fields}{P1}{pos} ]);
+        $res->[2]{"weight_Z-2"} = _interpolate( 2.287,  1   => $row->[ $meta->{fields}{P1}{pos}  ],  3   => $row->[ $meta->{fields}{P3}{pos} ]);
+        $res->[2]{"weight_Z-1"} = _interpolate(15.867, 15   => $row->[ $meta->{fields}{P15}{pos} ], 25   => $row->[ $meta->{fields}{P25}{pos} ]);
+        $res->[2]{"weight_Z+1"} = _interpolate(84.133, 75   => $row->[ $meta->{fields}{P75}{pos} ], 85   => $row->[ $meta->{fields}{P85}{pos} ]);
+        $res->[2]{"weight_Z+2"} = _interpolate(97.713, 97   => $row->[ $meta->{fields}{P97}{pos} ], 99   => $row->[ $meta->{fields}{P99}{pos} ]);
+        $res->[2]{"weight_Z+3"} = _interpolate(99.830, 99   => $row->[ $meta->{fields}{P99}{pos} ], 99.9 => $row->[ $meta->{fields}{P999}{pos} ]);
+        
         if ($args{weight}) {
-            $res->[2]{weight_percentile} = _calc_percentile($args{weight}, $row, $meta);
+            my $pct = _calc_percentile($args{weight}, $row, $meta);
+            $res->[2]{weight_percentile} = $pct;
+            require Statistics::Standard_Normal;
+            $res->[2]{weight_zscore} = Statistics::Standard_Normal::pct_to_z($pct);
         }
     }
 
