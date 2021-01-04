@@ -553,6 +553,11 @@ sub get_who_growth_reference {
  #      age => "36.0 month(s)",
  #      mean_height => 95.034, # cm
  #      mean_weight => 13.9,   # kg
+ #      height_P01  => ..., # height at 0.1% percentile
+ #      height_P1   => ..., # height at 1% percentile
+ #      height_Z-3  => ..., # height at -3 SD
+ #      height_Z-2  => ..., # height at -2 SD
+ #      ...
  #     }]
 
  # you have a 3.5-year old boy weighing at 14.8kg and with a height of 102cm,
@@ -563,8 +568,12 @@ sub get_who_growth_reference {
  #      age => "42.0 month(s)",
  #      mean_height => 99.844, # cm
  #      height_percentile => 70.2, # your boy's height is above world average, about 70.2% of boys of the same age are shorter than your boy
+ #      height_zscore => ...,
  #      mean_weight => 15.3,   # kg
  #      weight_percentile => 39.6, # your boy's weight is below world average, about 39.6% of boys of the same age weigh less than your boy
+ #      weight_zscore => ...,
+ #      height_P01 => ...,
+ #      ...
  #     }]
 
 
