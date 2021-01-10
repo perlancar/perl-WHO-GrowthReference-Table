@@ -933,6 +933,8 @@ sub get_who_growth_reference {
 
 =head1 SEE ALSO
 
+L<WHO::GrowthReference::GenChart>
+
 L<App::WHOGrowthReferenceUtils>
 
 L<http://www.who.int/childgrowth/standards/en/>
