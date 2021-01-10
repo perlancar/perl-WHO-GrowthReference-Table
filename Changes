@@ -1,3 +1,10 @@
+0.006   2021-01-10  Released-By: PERLANCAR; Urgency: low
+
+	- No data changes.
+
+	- [doc] Mention WHO::GrowthReference::GenChart.
+
+
 0.005   2021-01-08  Released-By: PERLANCAR; Urgency: medium; Backward-Compatible: no
 
         [Incompatible Changes]
