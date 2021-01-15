@@ -690,6 +690,14 @@ sub _get_value_at_pct {
 $SPEC{get_who_growth_reference} = {
     v => 1.1,
     summary => 'Lookup height/weight in the WHO growth chart (a.k.a. growth reference, growth standards)',
+    description => <<'_',
+
+Caveats:
+
+Currently the z-zcore line values (e.g. height_Z1, height_Z-1, etc) are
+calculated using linear interpolation.
+
+_
     args => {
         gender => {
             schema => ['str*', in=>['M', 'F']],
@@ -837,8 +845,18 @@ sub get_who_growth_reference {
             $res->[2]{weight} = $args{weight};
             my $pct = _calc_percentile($args{weight}, $row, $meta);
             $res->[2]{weight_percentile} = $pct;
-            require Statistics::Standard_Normal;
-            $res->[2]{weight_zscore} = Statistics::Standard_Normal::pct_to_z($pct);
+
+            # according to WHO executive summary [1], weight-age doesn't follow
+            # a normal distribution. only height(length)-for-age does ("Apart
+            # from length/height-for-age, which followed a normal distribution,
+            # the other standards required the modelling of skewness, but not
+            # kurtosis.") so don't convert z-score from percentile using
+            # Statistics::Standard_Normal. we'll have to use a z-score-based
+            # table from WHO.
+            #
+            # [1] https://www.who.int/childgrowth/standards/tr_summary/en/
+            #require Statistics::Standard_Normal;
+            #$res->[2]{weight_zscore} = Statistics::Standard_Normal::pct_to_z($pct);
 
             my $row_potential = $data_potential->[-1];
             $res->[2]{weight_potential_10y_Z0} = $row_potential->[ $meta->{fields}{P50}{pos} ];
@@ -881,8 +899,17 @@ sub get_who_growth_reference {
             $res->[2]{bmi} = $bmi;
             my $pct = _calc_percentile($bmi, $row, $meta);
             $res->[2]{bmi_percentile} = $pct;
-            require Statistics::Standard_Normal;
-            $res->[2]{bmi_zscore} = Statistics::Standard_Normal::pct_to_z($pct);
+            # according to WHO executive summary [1], BMI-age doesn't follow a
+            # normal distribution. only height(length)-for-age does ("Apart from
+            # length/height-for-age, which followed a normal distribution, the
+            # other standards required the modelling of skewness, but not
+            # kurtosis.") so don't convert z-score from percentile using
+            # Statistics::Standard_Normal. we'll have to use a z-score-based
+            # table from WHO.
+            #
+            # [1] https://www.who.int/childgrowth/standards/tr_summary/en/
+            #require Statistics::Standard_Normal;
+            #$res->[2]{bmi_zscore} = Statistics::Standard_Normal::pct_to_z($pct);
         }
     }
 
