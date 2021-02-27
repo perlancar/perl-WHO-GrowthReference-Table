@@ -1,3 +1,20 @@
+0.007   2021-01-16  Released-By: PERLANCAR; Urgency: medium
+
+	- [bugfix] Use zscore tables as well as percentile tables to produce
+	  zscore results, we cannot convert from percentile to zscore using
+	  Statistics::Standard_Normal other than for the height-age data,
+	  because the other data do not follow a normal distribution.
+
+        - [incompatible changes] Rename some result keys.
+
+
+0.006   2021-01-10  Released-By: PERLANCAR; Urgency: low
+
+	- No data changes.
+
+	- [doc] Mention WHO::GrowthReference::GenChart.
+
+
 0.005   2021-01-08  Released-By: PERLANCAR; Urgency: medium; Backward-Compatible: no
 
         [Incompatible Changes]
