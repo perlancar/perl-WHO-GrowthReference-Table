@@ -1552,13 +1552,18 @@ sub get_who_growth_reference {
  #     }]
 
 
+=head1 DESCRIPTION
+
+
 =head1 SEE ALSO
 
-L<WHO::GrowthReference::GenChart>
+L<WHO::GrowthReference::GenChart> uses this module to make growth charts.
 
-L<App::WHOGrowthReferenceUtils>
+For CLI frontends for this module and more, see L<App::WHOGrowthReferenceUtils>.
 
-L<http://www.who.int/childgrowth/standards/en/>
+Source data is from L<http://www.who.int/childgrowth/standards/en/>. Note that
+CDC also publishes growth standards; I might write
+L<CDC::GrowthReference::Table> too someday.
 
 =cut
 
