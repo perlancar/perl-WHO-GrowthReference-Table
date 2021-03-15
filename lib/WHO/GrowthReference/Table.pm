@@ -1239,6 +1239,20 @@ _
         req_one => ['dob', 'age'],
         dep_any => ['now', ['dob']],
     },
+    examples => [
+        {
+            summary => 'Get weight/height information for a boy that is born on May 4, 2017',
+            args => {gender => 'M', dob => '2017-05-04'},
+        },
+        {
+            summary => 'Get weight/height information for a 6.5yo girl',
+            args => {gender => 'F', age => '6.5y'},
+        },
+        {
+            summary => 'See percentiles/z-scores for a 6yo boy weighing 17kg and having a height of 102cm',
+            args => {gender => 'M', age => '6y', weight=>17, height=>102},
+        },
+    ],
 };
 sub get_who_growth_reference {
     no strict 'refs';
