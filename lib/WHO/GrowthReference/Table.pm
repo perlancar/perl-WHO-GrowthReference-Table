@@ -1,15 +1,16 @@
 package WHO::GrowthReference::Table;
 
+use 5.010001;
+use strict;
+use warnings;
+
+use Exporter qw(import);
+
 # AUTHORITY
 # DATE
 # DIST
 # VERSION
 
-use 5.010001;
-use strict;
-use warnings;
-
-use Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(
                        get_who_growth_reference
@@ -1212,6 +1213,14 @@ _
             schema => ['str*', in=>['M', 'F']],
             req => 1,
             pos => 0,
+            cmdline_aliases => {
+                boy    => {is_flag=>1, summary=>'Shortcut for --gender=M', code=>sub { $_[0]{gender} = 'M' }},
+                girl   => {is_flag=>1, summary=>'Shortcut for --gender=F', code=>sub { $_[0]{gender} = 'F' }},
+                male   => {is_flag=>1, summary=>'Shortcut for --gender=M', code=>sub { $_[0]{gender} = 'M' }},
+                female => {is_flag=>1, summary=>'Shortcut for --gender=F', code=>sub { $_[0]{gender} = 'F' }},
+                m      => {is_flag=>1, summary=>'Shortcut for --gender=M', code=>sub { $_[0]{gender} = 'M' }},
+                f      => {is_flag=>1, summary=>'Shortcut for --gender=F', code=>sub { $_[0]{gender} = 'F' }},
+            },
         },
         now => {
             summary => 'Assume now is this date, instead of current date',
@@ -1255,7 +1264,7 @@ _
     ],
 };
 sub get_who_growth_reference {
-    no strict 'refs';
+    no strict 'refs'; ## no critic: TestingAndDebugging::ProhibitNoStrict
     require Data::TableData::Lookup;
 
     my %args = @_;
