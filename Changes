@@ -53,7 +53,7 @@
 	- [doc] Mention WHO::GrowthReference::GenChart.
 
 
-0.005   2021-01-08  Released-By: PERLANCAR; Urgency: medium; Backward-Compatible: no
+0.005   2021-01-08  Released-By: PERLANCAR; Urgency: medium; Backward-Incompatible: yes
 
         [Incompatible Changes]
 
